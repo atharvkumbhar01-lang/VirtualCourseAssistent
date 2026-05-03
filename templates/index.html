@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Virtual Course Assistant</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <h2>📜 History</h2>
+        <div id="historyList"></div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main">
+
+        <div class="header">
+            🎓 AI Virtual Course Assistant
+        </div>
+
+        <div id="chatbox"></div>
+
+        <div class="input-area">
+            <input type="text" id="question" placeholder="Ask anything..." />
+            <button onclick="askQuestion()">Send</button>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+// ADD MESSAGE WITH EDIT OPTION
+function addMessage(role, text, index = null) {
+    let chatbox = document.getElementById("chatbox");
+
+    let msg = document.createElement("div");
+    msg.className = role === "user" ? "msg user" : "msg bot";
+
+    let content = document.createElement("div");
+    content.className = "msg-text";
+    content.innerText = text;
+
+    msg.appendChild(content);
+
+    // ✏️ EDIT BUTTON ONLY FOR USER
+    if (role === "user") {
+        let editBtn = document.createElement("span");
+        editBtn.innerHTML = "✏️";
+        editBtn.className = "edit-btn";
+
+        editBtn.onclick = () => enableEdit(msg, content, index);
+
+        msg.appendChild(editBtn);
+    }
+
+    chatbox.appendChild(msg);
+    chatbox.scrollTop = chatbox.scrollHeight;
+}
+
+
+// ENABLE EDIT MODE
+function enableEdit(msgDiv, textDiv, index) {
+
+    let oldText = textDiv.innerText;
+
+    let input = document.createElement("input");
+    input.value = oldText;
+    input.className = "edit-input";
+
+    let saveBtn = document.createElement("button");
+    saveBtn.innerText = "Save";
+    saveBtn.className = "save-btn";
+
+    msgDiv.innerHTML = "";
+    msgDiv.appendChild(input);
+    msgDiv.appendChild(saveBtn);
+
+    saveBtn.onclick = async () => {
+        let newText = input.value;
+
+        // Update UI
+        msgDiv.innerHTML = "";
+        addMessage("user", newText, index);
+
+        // Remove old bot reply
+        let chatbox = document.getElementById("chatbox");
+        chatbox.lastChild.remove();
+
+        // Fetch new answer
+        let response = await fetch("/ask", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({question: newText})
+        });
+
+        let data = await response.json();
+        addMessage("bot", data.answer);
+
+        // Update history
+        let history = JSON.parse(localStorage.getItem("chatHistory")) || [];
+        history[index] = { question: newText, answer: data.answer };
+        localStorage.setItem("chatHistory", JSON.stringify(history));
+
+        loadHistory();
+    };
+}
+
+
+// ENTER KEY
+document.getElementById("question").addEventListener("keydown", function(event) {
+    if (event.key === "Enter") {
+        event.preventDefault();
+        askQuestion();
+    }
+});
+
+
+// ASK QUESTION
+async function askQuestion() {
+    let q = document.getElementById("question").value;
+    if (!q) return;
+
+    let history = JSON.parse(localStorage.getItem("chatHistory")) || [];
+    let index = history.length;
+
+    addMessage("user", q, index);
+    document.getElementById("question").value = "";
+
+    let response = await fetch("/ask", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({question: q})
+    });
+
+    let data = await response.json();
+    addMessage("bot", data.answer);
+
+    history.push({ question: q, answer: data.answer });
+    localStorage.setItem("chatHistory", JSON.stringify(history));
+
+    loadHistory();
+}
+
+
+// LOAD HISTORY
+function loadHistory() {
+    let history = JSON.parse(localStorage.getItem("chatHistory")) || [];
+    let historyList = document.getElementById("historyList");
+
+    historyList.innerHTML = "";
+
+    history.forEach((item, index) => {
+        let div = document.createElement("div");
+        div.className = "history-item";
+
+        let text = document.createElement("span");
+        text.className = "history-text";
+        text.innerText = item.question;
+
+        text.onclick = () => {
+            document.getElementById("chatbox").innerHTML = "";
+            addMessage("user", item.question, index);
+            addMessage("bot", item.answer);
+        };
+
+        let del = document.createElement("button");
+        del.className = "delete-btn";
+        del.innerHTML = "🗑️";
+
+        del.onclick = (e) => {
+            e.stopPropagation();
+            deleteHistory(index);
+        };
+
+        div.appendChild(text);
+        div.appendChild(del);
+
+        historyList.appendChild(div);
+    });
+}
+
+
+// DELETE HISTORY
+function deleteHistory(index) {
+    let history = JSON.parse(localStorage.getItem("chatHistory")) || [];
+    history.splice(index, 1);
+    localStorage.setItem("chatHistory", JSON.stringify(history));
+    loadHistory();
+}
+
+loadHistory();
+
+</script>
+
+</body>
+</html>

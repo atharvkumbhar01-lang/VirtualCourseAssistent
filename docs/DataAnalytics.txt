@@ -1,0 +1,22 @@
+Title: Data Analytics Course
+Include:
+	What is Data Analytics 
+	programming language:
+o	Python 
+
+	Tools: 
+o	Excel 
+o	SQL 
+o	Power BI 
+o	Tableau 
+
+	Topics: 
+o	Data Cleaning 
+o	Dashboards 
+o	Business Insights
+
+	Duration: 4 Months 
+	Fees: ₹30,000 
+	Career Roles: 
+o	Data Analyst 
+o	Business Analyst 

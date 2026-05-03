@@ -1,0 +1,19 @@
+Title: Data Science Course
+Include:
+	What is Data Science Course 
+  -> Data Science is a field that involves data analysis, machine learning,
+    statistics, and visualization to extract insights from data.
+    A Data Science course typically covers Python, statistics,
+machine learning, data visualization, and databases.
+	Tools: Python, Pandas, NumPy, ML 
+	Topics: 
+o	Data Cleaning 
+o	Visualization 
+o	Machine Learning (Regression, Classification) 
+	Duration: 6 Months 
+	Fees: ₹50,000 
+	Career Roles: 
+o	Data Scientist 
+o	ML Engineer 
+	Eligibility: 
+o	Basic programming knowledge 

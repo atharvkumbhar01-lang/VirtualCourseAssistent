@@ -1,0 +1,16 @@
+Title: Full Stack Java Course
+Include:
+	Technologies: 
+o	Core Java 
+o	Spring Boot 
+o	Hibernate 
+o	Angular / React 
+	Topics: 
+o	Backend APIs 
+o	Frontend UI 
+o	Database (MySQL) 
+	Duration: 5 Months 
+	Fees: ₹40,000 
+	Career Roles: 
+o	Full Stack Developer 
+o	Backend Developer
